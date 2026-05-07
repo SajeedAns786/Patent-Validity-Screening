@@ -1,6 +1,7 @@
 # Environment variables
 .env
 
-# Python cache
+# Python caches
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class

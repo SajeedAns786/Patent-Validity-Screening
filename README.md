@@ -1,6 +1,6 @@
 # AI-Powered Patent Viability & Risk Classifier
 
-🚀 **[Live Demo: Try the Patent Classifier on Hugging Face Spaces](https://huggingface.co/spaces/SajeedAns786/Patent-Classifier)**
+🚀 **[Live Demo: Try the Patent Classifier on Hugging Face Spaces](https://huggingface.co/spaces/SajeedAns786/Patent-Classifier-v1)**
 
 ## Executive Summary
 This project provides a machine learning prototype built with Python and `scikit-learn`, tailored specifically for Intellectual Property (IP) attorneys, in-house counsel, and corporate R&D strategy teams. 

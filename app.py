@@ -89,30 +89,66 @@ def fetch_patent_data(app_number):
         return None, None
 
 # --- UI Setup ---
-st.set_page_config(page_title="Patent Viability Classifier", page_icon="⚖️", layout="centered")
+st.set_page_config(page_title="Patent Viability Classifier", page_icon="🏛️", layout="wide")
 
-st.title("⚖️ AI Patent Viability Classifier")
-st.markdown("Enter a **USPTO Application Number** below. The system will query the real-time USPTO File Wrapper, analyze prosecution metrics, and predict the patent's structural enforceability.")
+# Custom CSS for a US Corporate/Legal Aesthetic
+st.markdown("""
+<style>
+    .stApp { background-color: #F8F9FA; }
+    h1, h2, h3, h4 { color: #0A2540; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    div[data-testid="stMetric"] {
+        background-color: #FFFFFF;
+        border: 1px solid #E0E4E8;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-left: 4px solid #005A9C;
+    }
+    div[data-testid="stMetric"] label { color: #5C6D7E; font-weight: 600; font-size: 0.9rem; }
+    div[data-testid="stMetric"] div { color: #0A2540; }
+    .stButton>button {
+        background-color: #005A9C; color: white; border-radius: 3px; font-weight: bold;
+        border: none; padding: 0.5rem 2rem; width: 100%; transition: 0.2s;
+    }
+    .stButton>button:hover { background-color: #004080; color: white; border: 1px solid #004080; }
+    div[data-testid="stTextInput"] label { color: #0A2540; font-weight: bold; }
+    .stAlert { border-left-color: #005A9C; }
+</style>
+""", unsafe_allow_html=True)
 
-# User Input
-app_number = st.text_input("Application Number (e.g., 14123456)", "")
+# Sidebar
+with st.sidebar:
+    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Seal_of_the_United_States_Patent_and_Trademark_Office.svg/200px-Seal_of_the_United_States_Patent_and_Trademark_Office.svg.png", width=120)
+    st.markdown("### 🏛️ Legal IP Assessment Tool")
+    st.markdown("This enterprise tool connects to the **USPTO Open Data Portal** to extract prosecution history and applies predictive modeling for Freedom-To-Operate (FTO) and litigation risk analysis.")
+    st.divider()
+    st.caption("Designed for Corporate IP Counsel & R&D Strategy Teams.")
 
-if st.button("Analyze Patent"):
+# Main Body
+st.title("Patent Enforceability & Risk Classifier")
+st.markdown("Enter a **USPTO Application Number** to instantly retrieve the file wrapper and execute predictive structural analysis.")
+
+# Layout: 2 Columns for input to keep it contained
+col_input, col_empty = st.columns([1, 1])
+with col_input:
+    app_number = st.text_input("Application Number (e.g., 14123456)", "")
+    analyze_btn = st.button("Execute Analysis")
+
+if analyze_btn:
     if app_number.strip():
-        with st.spinner('Querying USPTO Open Data Portal...'):
+        with st.spinner('Establishing secure connection to USPTO Open Data Portal...'):
             title, features = fetch_patent_data(app_number.strip())
             
         if features:
-            st.success(f"**Invention Title:** {title}")
+            st.success(f"**Target Asset:** {title}")
             
-            # Display Features Dashboard
-            st.subheader("📊 Extracted Prosecution Metrics")
-            col1, col2, col3, col4, col5 = st.columns(5)
-            col1.metric("Claims", features[0])
-            col2.metric("Citations", features[1])
-            col3.metric("Office Actions", features[2], help="Real data extracted from File Wrapper history")
-            col4.metric("Days", features[3])
-            col5.metric("Breadth", features[4])
+            st.markdown("### Prosecution Metrics")
+            m1, m2, m3, m4, m5 = st.columns(5)
+            m1.metric("Claims", features[0])
+            m2.metric("Citations", features[1])
+            m3.metric("Office Actions", features[2], help="Sourced directly from USPTO Event History")
+            m4.metric("Days to Grant", features[3])
+            m5.metric("Breadth Score", f"{features[4]}/10")
             
             # ML Prediction
             new_patent = np.array([features])
@@ -121,18 +157,24 @@ if st.button("Analyze Patent"):
             pred_probs = clf.predict_proba(new_scaled)[0]
             
             st.divider()
-            st.subheader("🧠 Machine Learning Classification")
+            st.markdown("### 🧠 Probabilistic Risk Classification")
             
-            # Map classes to colors for styling
-            color_map = {"Valid": "green", "Weak": "orange", "Disputed": "red", "Invalid": "darkred"}
-            pred_color = color_map.get(labels[pred_class], "black")
+            # Strict Corporate Color Mapping
+            color_map = {"Valid": "#2E7D32", "Weak": "#F57C00", "Disputed": "#D32F2F", "Invalid": "#B71C1C"}
+            pred_color = color_map.get(labels[pred_class], "#0A2540")
             
-            st.markdown(f"### Risk Category: <span style='color:{pred_color}'>{labels[pred_class]}</span>", unsafe_allow_html=True)
+            c1, c2 = st.columns([1, 2])
+            with c1:
+                st.markdown(f"<div style='padding: 20px; border: 2px solid {pred_color}; border-radius: 5px; text-align: center;'>"
+                            f"<h4 style='color: #0A2540; margin:0;'>Risk Category</h4>"
+                            f"<h2 style='color: {pred_color}; margin:0;'>{labels[pred_class].upper()}</h2>"
+                            f"</div>", unsafe_allow_html=True)
+            with c2:
+                st.markdown("**Confidence Distribution:**")
+                for label, prob in zip(labels, pred_probs):
+                    st.progress(float(prob), text=f"{label}: {prob*100:.1f}%")
             
-            st.write("**Probability Breakdown:**")
-            for label, prob in zip(labels, pred_probs):
-                st.progress(float(prob), text=f"{label}: {prob*100:.1f}%")
-            
-            st.caption("*Disclaimer: Only Office Action count is extracted live from the USPTO API. Other fields are simulated for this demonstration model.*")
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.caption("*Disclaimer: Office Action metrics are sourced live from the USPTO API. Other fields are simulated for proof-of-concept modeling.*")
     else:
-        st.warning("Please enter a valid Application Number.")
+        st.warning("Please provide a valid Application Number.")

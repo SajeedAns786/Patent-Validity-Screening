@@ -118,9 +118,18 @@ st.markdown("""
 
 # Sidebar
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Seal_of_the_United_States_Patent_and_Trademark_Office.svg/200px-Seal_of_the_United_States_Patent_and_Trademark_Office.svg.png", width=120)
-    st.markdown("### 🏛️ Legal IP Assessment Tool")
+    st.markdown("<div style='font-size: 70px; text-align: center;'>🏛️</div>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #0A2540; margin-top: -15px;'>Legal IP Assessment</h3>", unsafe_allow_html=True)
     st.markdown("This enterprise tool connects to the **USPTO Open Data Portal** to extract prosecution history and applies predictive modeling for Freedom-To-Operate (FTO) and litigation risk analysis.")
+    
+    st.divider()
+    st.markdown("### 📋 Strategic Use Cases")
+    st.markdown("Use the ML output to guide IP strategy:")
+    st.markdown("<span style='color:#2E7D32; font-weight:bold;'>🟢 Valid:</span> High enforceability. Safe to invest in licensing or assert in offensive litigation.", unsafe_allow_html=True)
+    st.markdown("<span style='color:#F57C00; font-weight:bold;'>🟠 Weak:</span> Narrow claim scope. Prime candidate for a successful FTO design-around.", unsafe_allow_html=True)
+    st.markdown("<span style='color:#D32F2F; font-weight:bold;'>🔴 Disputed:</span> Anomalous history. High risk of post-grant PTAB/IPR challenges.", unsafe_allow_html=True)
+    st.markdown("<span style='color:#B71C1C; font-weight:bold;'>🧨 Invalid:</span> Critical vulnerability. A green light for FTO; aggressively counter if asserted.", unsafe_allow_html=True)
+    
     st.divider()
     st.caption("Designed for Corporate IP Counsel & R&D Strategy Teams.")
 
